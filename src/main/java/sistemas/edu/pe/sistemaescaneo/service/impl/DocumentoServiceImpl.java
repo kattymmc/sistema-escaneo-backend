@@ -41,4 +41,10 @@ public class DocumentoServiceImpl implements IDocumentoService{
 		
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<Documento> findDocumentoByCodigoDoc(String term) {
+		return documentoDAO.findByCodigoDocContainingIgnoreCase(term);
+	}
+
 }
