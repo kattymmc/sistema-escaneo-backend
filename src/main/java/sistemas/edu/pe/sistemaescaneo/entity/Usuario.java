@@ -1,6 +1,7 @@
 package sistemas.edu.pe.sistemaescaneo.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,13 +15,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="usuarios")
@@ -29,21 +33,6 @@ public class Usuario implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	
-	@NotEmpty(message ="no puede estar vacio")
-	@Column(nullable=false)
-	private String nombre;
-	
-	@NotEmpty(message ="no puede estar vacio")
-	private String apellidomat;
-	
-	@NotEmpty(message ="no puede estar vacio")
-	private String apellidopat;
-	
-	@NotEmpty(message ="no puede estar vacio")
-	@Email(message="no es una dirección de correo bien formada")
-	@Column(nullable=false, unique=true)
-	private String email;
 	
 	@NotEmpty(message ="no puede estar vacio")
 	@Column(unique=true, length=20)
@@ -59,51 +48,42 @@ public class Usuario implements Serializable {
 	inverseJoinColumns= @JoinColumn(name="rol_id"),
 	uniqueConstraints= {@UniqueConstraint(columnNames= {"usuario_id","rol_id"})})
 	private List<Rol> roles;
+	
+	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "persona_id", referencedColumnName = "id")
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler","usuario"})
+	private Persona persona;
 		
+	@JsonIgnoreProperties("usuario")
+	@OneToMany(mappedBy = "usuario",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Documento> documentos;
+	
 	@CreationTimestamp
 	private Date dateCreated;
 	
 	@UpdateTimestamp
 	private Date lastUpdated;
 	
+	public Usuario() {
+		this.roles = new ArrayList<>();
+	}
+	
+	public Usuario(@NotEmpty(message = "no puede estar vacio") String username, String password, Boolean enabled,
+			List<Rol> roles, Persona persona) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.enabled = enabled;
+		this.roles = roles;
+		this.persona = persona;
+	}
+
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getApellidomat() {
-		return apellidomat;
-	}
-
-	public void setApellidomat(String apellidomat) {
-		this.apellidomat = apellidomat;
-	}
-
-	public String getApellidopat() {
-		return apellidopat;
-	}
-
-	public void setApellidopat(String apellidopat) {
-		this.apellidopat = apellidopat;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public String getUsername() {
@@ -154,7 +134,21 @@ public class Usuario implements Serializable {
 		this.enabled = enabled;
 	}
 
+	public Persona getPersona() {
+		return persona;
+	}
 
+	public void setPersona(Persona persona) {
+		this.persona = persona;
+	}
+
+	public List<Documento> getDocumentos() {
+		return documentos;
+	}
+
+	public void setDocumentos(List<Documento> documentos) {
+		this.documentos = documentos;
+	}
 
 	private static final long serialVersionUID = 1L;
 }

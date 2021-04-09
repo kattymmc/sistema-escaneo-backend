@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +16,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import sistemas.edu.pe.sistemaescaneo.entity.Usuario;
+import sistemas.edu.pe.sistemaescaneo.service.IUsuarioService;
 
 @Service
 public class JwtUtil {
     private  String SECRET_KEY ="holamellamokatherinemiravalcabrerayestaesunaclavemuysecreta";
- 
+
+    @Autowired
+	private IUsuarioService usuarioService;
+	
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -43,11 +49,16 @@ public class JwtUtil {
     
     public String generateToken(UserDetails userDetails) {
     	Map<String, Object> claims = new HashMap<>();
+    	Usuario usuario = usuarioService.findByUsername(userDetails.getUsername());
+    	claims.put("nombre", usuario.getPersona().getNombre());
+    	claims.put("apellidopat", usuario.getPersona().getApellidopat());
+    	claims.put("apellidomat", usuario.getPersona().getApellidomat());
     	return createToken(claims, userDetails.getUsername());
     }
     
 	private String createToken(Map<String, Object> claims, String subject) {
 		SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));
+		System.out.print(claims);
     	return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
     			.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10 ))
     			.signWith(secretKey, SignatureAlgorithm.HS256).compact();

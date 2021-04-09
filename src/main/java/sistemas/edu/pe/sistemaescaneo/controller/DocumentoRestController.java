@@ -21,12 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 
 import sistemas.edu.pe.sistemaescaneo.entity.Documento;
 import sistemas.edu.pe.sistemaescaneo.entity.Imagen;
+import sistemas.edu.pe.sistemaescaneo.entity.Usuario;
 import sistemas.edu.pe.sistemaescaneo.service.IDocumentoService;
 import sistemas.edu.pe.sistemaescaneo.service.IUploadFileService;
+import sistemas.edu.pe.sistemaescaneo.service.IUsuarioService;
 
 @CrossOrigin(origins={"http://localhost:4200"}) 
 @RestController
@@ -38,6 +41,9 @@ public class DocumentoRestController {
 	
 	@Autowired
 	private IUploadFileService uploadService;
+	
+	@Autowired
+	private IUsuarioService usuarioService;
 	
 	@GetMapping("/documentos")
 	public List<Documento> listarDocumentos(){
@@ -67,7 +73,7 @@ public class DocumentoRestController {
 	}
 	
 	@PostMapping("/documentos")
-	public ResponseEntity<?> crearDocumento(@Valid @RequestBody Documento documento, BindingResult result) {
+	public ResponseEntity<?> crearDocumento(@Valid @RequestBody Documento documento, BindingResult result, Authentication authentication) {
 		Documento documentoNuevo = null;
 		Map<String, Object> response = new HashMap<>();
 		
@@ -84,6 +90,8 @@ public class DocumentoRestController {
 		}
 				
 		try {
+			Usuario usuario = usuarioService.findByUsername(authentication.getName());
+			documento.setUsuario(usuario);
 			documentoNuevo = documentoService.save(documento);
 		} catch(DataAccessException e) {
 			response.put("mensaje", "Error al realizar al insertar en la Base de Datos");
@@ -118,8 +126,7 @@ public class DocumentoRestController {
 		
 		try {
 			documentoAnterior.setCodigoDoc(documento.getCodigoDoc());
-			documentoAnterior.setAnaquel(documento.getAnaquel());
-			documentoAnterior.setColumna(documento.getColumna());
+			documentoAnterior.setDescripcion(documento.getDescripcion());
 			documentoAnterior.setTipoDocumento(documento.getTipoDocumento());
 			documentoActualizado = documentoService.save(documentoAnterior);
 		} catch (DataAccessException e) {

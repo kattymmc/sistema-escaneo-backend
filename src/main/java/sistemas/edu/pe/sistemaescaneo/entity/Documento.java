@@ -36,11 +36,8 @@ public class Documento implements Serializable{
 	@Column(nullable=false, unique=true)
 	private String codigoDoc;
 	
-	@NotNull(message="No puede estar vacío el anaquel")
-	private int anaquel;
-	
-	@NotNull(message="No puede estar vacío la columna")
-	private int columna;
+	@NotEmpty(message ="no puede estar vacio")
+	private String descripcion;
 	
 	@NotNull(message = "El tipo no puede ser vacío")
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -51,6 +48,10 @@ public class Documento implements Serializable{
 	@JsonIgnoreProperties("documento")
 	@OneToMany(mappedBy = "documento",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Imagen> imagenes;
+	
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler","documentos"})
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Usuario usuario;
 	
 	@CreationTimestamp
 	private Date dateCreated;
@@ -76,23 +77,6 @@ public class Documento implements Serializable{
 
 	public void setCodigoDoc(String codigoDoc) {
 		this.codigoDoc = codigoDoc;
-	}
-	
-
-	public int getAnaquel() {
-		return anaquel;
-	}
-
-	public void setAnaquel(int anaquel) {
-		this.anaquel = anaquel;
-	}
-
-	public int getColumna() {
-		return columna;
-	}
-
-	public void setColumna(int columna) {
-		this.columna = columna;
 	}
 
 	public TipoDocumento getTipoDocumento() {
@@ -126,6 +110,24 @@ public class Documento implements Serializable{
 	public void setImagenes(List<Imagen> imagenes) {
 		this.imagenes = imagenes;
 	}
+	
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+
 
 	private static final long serialVersionUID = 1L;
 	
