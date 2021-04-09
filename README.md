@@ -1,4 +1,6 @@
 # Peticiones http para cada URL
+Cualquier persona tiene acceso a ``/api/usuarios/register`` y ``/api/autenticacion``. Para ingresar a las demas URL tienen que estar autenticados, y mandar el token generado
+
 ## GET
 * http://localhost:8080/api/documentos -> Ver todos los documentos
 * http://localhost:8080/api/documentos/{id} -> Ver un documento según su id
