@@ -3,7 +3,6 @@ package sistemas.edu.pe.sistemaescaneo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,9 +44,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
 		http.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().authorizeRequests()
-			.antMatchers(HttpMethod.GET, "/api/documentos").permitAll()
+			//.antMatchers(HttpMethod.GET, "/api/documentos").permitAll()
 			.antMatchers("/api/autenticacion","/api/usuarios/register").permitAll()
-			.antMatchers(HttpMethod.DELETE, "/api/documentos/*").hasRole("ADMIN")
+			//.antMatchers(HttpMethod.DELETE, "/api/usuarios/*").hasRole("ADMIN")
 			.anyRequest().authenticated();
 			//.and().httpBasic()
 			

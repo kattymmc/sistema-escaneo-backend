@@ -1,7 +1,11 @@
 package sistemas.edu.pe.sistemaescaneo.models;
 
+import javax.validation.constraints.NotBlank;
+
 public class AuthenticationRequest {
+	@NotBlank
 	private String username;
+	@NotBlank
 	private String password;
 	
 	public AuthenticationRequest() {

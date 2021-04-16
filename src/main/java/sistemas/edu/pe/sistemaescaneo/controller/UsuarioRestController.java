@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import sistemas.edu.pe.sistemaescaneo.config.JwtUtil;
+import sistemas.edu.pe.sistemaescaneo.dto.JwtDto;
 import sistemas.edu.pe.sistemaescaneo.dto.NuevoUsuario;
 import sistemas.edu.pe.sistemaescaneo.entity.Persona;
 import sistemas.edu.pe.sistemaescaneo.entity.Rol;
 import sistemas.edu.pe.sistemaescaneo.entity.Usuario;
 import sistemas.edu.pe.sistemaescaneo.models.AuthenticationRequest;
-import sistemas.edu.pe.sistemaescaneo.models.AuthenticationResponse;
 import sistemas.edu.pe.sistemaescaneo.service.IRolService;
 import sistemas.edu.pe.sistemaescaneo.service.IUsuarioService;
 
@@ -91,24 +91,31 @@ public class UsuarioRestController {
 	}
 
 	@PostMapping("/autenticacion")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception{
+	public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthenticationRequest authenticationRequest, BindingResult bindingResult) throws Exception{
 		Map<String, Object> response = new HashMap<>();
+		if(bindingResult.hasErrors()) {
+			response.put("mensaje", "Campos mal puestos");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+		
 		try {
 			authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
 			);
 		} catch (BadCredentialsException e) {
 			response.put("mensaje", "Credenciales incorrectas");
-			throw new Exception("Incorrect username or password", e);
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(authenticationRequest.getUsername());
 		
 		final String jwt = jwtTokenUtil.generateToken(userDetails);
+		
+		JwtDto jwtDto = new JwtDto(jwt, userDetails.getUsername(), userDetails.getAuthorities());
 	
-		response.put("usuario",userDetails);
-		response.put("token", new AuthenticationResponse(jwt));
+		// response.put("usuario",userDetails);
+		// response.put("token", new AuthenticationResponse(jwt));
 				
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		return new ResponseEntity<JwtDto>(jwtDto, HttpStatus.OK);
 	}
 }
