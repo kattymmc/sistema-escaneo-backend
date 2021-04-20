@@ -23,4 +23,9 @@ public class ImagenServiceImpl implements IImagenService{
 		return imagenDAO.findById(id).orElse(null);
 	}
 
+	@Override
+	public Imagen save(Imagen imagen) {
+		return imagenDAO.save(imagen);
+	}
+
 }

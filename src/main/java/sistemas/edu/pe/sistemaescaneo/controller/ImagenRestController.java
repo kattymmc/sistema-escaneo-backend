@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,6 +73,29 @@ public class ImagenRestController {
 		documentoService.save(documento);
 
 		response.put("documento", documento);
+		response.put("mensaje", "Has subido correctamente las imagenes");
+		
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/documentos/upload/{id}")
+	public  ResponseEntity<?> update(@RequestParam("imagen") MultipartFile imagen, @PathVariable("id") Long id){
+		
+		Map<String, Object> response = new HashMap<>();
+		Imagen imagenAnterior = imagenService.findById(id);
+		
+		String nombreImagen;
+		Imagen imagenActualizada = null;
+		try {
+			nombreImagen = uploadService.copiar(imagen);
+			imagenAnterior.setNombre(nombreImagen);
+			imagenActualizada = imagenService.save(imagenAnterior);
+		} catch(IOException e) {
+				response.put("mensaje", "Error al actualizar la imagen: "+ imagenActualizada);
+				response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+			
 		response.put("mensaje", "Has subido correctamente las imagenes");
 		
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
