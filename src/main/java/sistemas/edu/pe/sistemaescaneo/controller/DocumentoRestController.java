@@ -31,7 +31,7 @@ import sistemas.edu.pe.sistemaescaneo.service.IDocumentoService;
 import sistemas.edu.pe.sistemaescaneo.service.IUploadFileService;
 import sistemas.edu.pe.sistemaescaneo.service.IUsuarioService;
 
-@CrossOrigin(origins={"http://localhost:4200"}) 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class DocumentoRestController {

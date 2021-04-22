@@ -27,7 +27,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import sistemas.edu.pe.sistemaescaneo.entity.TipoDocumento;
 import sistemas.edu.pe.sistemaescaneo.service.ITipoDocumentoService;
 
-@CrossOrigin(origins={"http://localhost:4200"}) 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class TipoDocumentoRestController {

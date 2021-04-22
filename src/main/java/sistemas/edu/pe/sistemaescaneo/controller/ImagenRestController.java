@@ -30,7 +30,7 @@ import sistemas.edu.pe.sistemaescaneo.service.IDocumentoService;
 import sistemas.edu.pe.sistemaescaneo.service.IImagenService;
 import sistemas.edu.pe.sistemaescaneo.service.IUploadFileService;
 
-@CrossOrigin(origins={"http://localhost:4200"}) 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class ImagenRestController {
