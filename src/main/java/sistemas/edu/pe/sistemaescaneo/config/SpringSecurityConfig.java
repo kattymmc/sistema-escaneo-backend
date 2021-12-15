@@ -45,10 +45,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
 		http.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and().authorizeRequests()
-			.antMatchers(HttpMethod.GET, "/api/uploads/img/*").permitAll()
-			.antMatchers("/api/autenticacion","/api/usuarios/register").permitAll()
+			.antMatchers(HttpMethod.GET, "/api/*").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/*").permitAll();
 			//.antMatchers(HttpMethod.DELETE, "/api/usuarios/*").hasRole("ADMIN")
-			.anyRequest().authenticated();
+			//.anyRequest().authenticated();
 			//.and().httpBasic()
 			
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
